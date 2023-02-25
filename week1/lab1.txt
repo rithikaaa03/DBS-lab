@@ -1,0 +1,148 @@
+1)
+
+SQL> create table employee(
+  2  emp_no int,
+  3  emp_name varchar(20),
+  4  emp_address varchar(20));
+
+Table created.
+
+SQL> desc employee;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EMP_NO                                             NUMBER(38)
+ EMP_NAME                                           VARCHAR2(20)
+ EMP_ADDRESS                                        VARCHAR2(20)
+
+
+2)
+SQL> insert into employee values(1,'hannah','manipal');
+
+1 row created.
+
+SQL> insert into employee values(2,'susan','mangalore');
+
+1 row created.
+
+SQL> insert into employee values(3,'geralt','udupi');
+
+1 row created.
+
+SQL> insert into employee values(4,'cirilla','mangalore');
+
+1 row created.
+
+SQL> insert into employee values(5,'dan','manipal');
+
+1 row created.
+
+SQL> select * from employee;
+
+    EMP_NO EMP_NAME             EMP_ADDRESS
+---------- -------------------- --------------------
+         1 hannah               manipal
+         2 susan                mangalore
+         3 geralt               udupi
+         4 cirilla              mangalore
+         5 dan                  manipal
+
+3)
+SQL> select emp_name from employee;
+
+EMP_NAME
+--------------------
+hannah
+susan
+geralt
+cirilla
+dan
+
+4)
+SQL> select * from employee where emp_address='manipal';
+
+    EMP_NO EMP_NAME             EMP_ADDRESS
+---------- -------------------- --------------------
+         1 hannah               manipal
+         5 dan                  manipal
+
+5)
+
+SQL> alter table employee add (salary numeric(8,2));
+
+Table altered.
+
+SQL> desc employee;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EMP_NO                                             NUMBER(38)
+ EMP_NAME                                           VARCHAR2(20)
+ EMP_ADDRESS                                        VARCHAR2(20)
+ SALARY                                             NUMBER(8,2)
+
+6)
+SQL> update employee set salary=184700.24 where emp_no=1;
+
+1 row updated.
+SQL> update employee set salary=108900.2 where emp_no=2;
+
+1 row updated.
+
+SQL> update employee set salary=19700.2 where emp_no=3;
+
+1 row updated.
+
+SQL> update employee set salary=29491 where emp_no=4;
+
+1 row updated.
+
+SQL> update employee set salary=17880.2 where emp_no=5;
+
+1 row updated.
+
+SQL> select * from employee;
+
+    EMP_NO EMP_NAME             EMP_ADDRESS              SALARY
+---------- -------------------- -------------------- ----------
+         1 hannah               manipal               184700.24
+         2 susan                mangalore              108900.2
+         3 geralt               udupi                   19700.2
+         4 cirilla              mangalore                 29491
+         5 dan                  manipal                 17880.2
+
+7)
+SQL> desc employee;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EMP_NO                                             NUMBER(38)
+ EMP_NAME                                           VARCHAR2(20)
+ EMP_ADDRESS                                        VARCHAR2(20)
+ SALARY                                             NUMBER(8,2)
+
+8)
+SQL> delete from employee where emp_address='mangalore';
+
+2 rows deleted.
+
+SQL> select * from employee;
+
+    EMP_NO EMP_NAME             EMP_ADDRESS              SALARY
+---------- -------------------- -------------------- ----------
+         1 hannah               manipal               184700.24
+         3 geralt               udupi                   19700.2
+         5 dan                  manipal                 17880.2
+
+9)
+SQL> rename employee to employee1;
+
+Table renamed.
+
+10)
+SQL> drop table employee1;
+
+Table dropped.
+
+SQL> select * from employee1;
+select * from employee1
+              *
+ERROR at line 1:
+ORA-00942: table or view does not exist
