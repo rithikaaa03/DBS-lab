@@ -1,0 +1,590 @@
+lab 2
+1)
+SQL> create table employee(
+  2  empno int primary key,
+  3  empname varchar(20) not null,
+  4  gender char(1) not null,
+  5  salary numeric(8,2) not null,
+  6  address varchar(20) not null,
+  7  dno int,
+  8  check(gender in('M','F')));
+
+Table created.
+
+2)
+SQL> create table department1(
+  2  deptno int primary key,
+  3  deptname varchar(20) unique,
+  4  location varchar(20));
+
+Table created.
+
+3)
+SQL> alter table employee add constraint dconst foreign key(dno) references department1(deptno);
+
+Table altered.
+4)
+SQL> insert into department1 values(1,'cse','ab5');
+
+1 row created.
+
+SQL> insert into department1 values(2,'maths','ab1');
+
+1 row created.
+
+SQL> insert into department1 values(3,'civil','ab2');
+
+1 row created.
+
+SQL> insert into employee values(1,'emily','F',23799,'manipal',1);
+
+1 row created.
+
+SQL> insert into employee values(2,'yennefer','F',92985,'mangalore',2);
+
+1 row created.
+
+SQL> insert into employee values(3,'walter','M',83725,'delhi',3);
+
+1 row created.
+
+5)
+SQL> insert into employee values(4,'harry','O',248768,'karkala',1);
+insert into employee values(4,'harry','O',248768,'karkala',1)
+*
+ERROR at line 1:
+ORA-02290: check constraint (RITHIKA.SYS_C007133) violated
+
+SQL> insert into employee values(4,'megha','M',2891989,'manipal',4);
+insert into employee values(4,'megha','M',2891989,'manipal',4)
+                                          *
+ERROR at line 1:
+ORA-01438: value larger than specified precision allowed for this column
+
+SQL> insert into employee values(4,'megha','M',289289,'manipal',4);
+insert into employee values(4,'megha','M',289289,'manipal',4)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (RITHIKA.DCONST) violated - parent key not
+found
+
+SQL> insert into department1 values(4,'cse','ab5');
+insert into department1 values(4,'cse','ab5')
+*
+ERROR at line 1:
+ORA-00001: unique constraint (RITHIKA.SYS_C007128) violated
+
+6)
+SQL> delete from department1 where deptno=1;
+delete from department1 where deptno=1
+*
+ERROR at line 1:
+ORA-02292: integrity constraint (RITHIKA.DCONST) violated - child record found
+
+
+SQL> update department1 set deptno=4 where deptname='cse';
+update department1 set deptno=4 where deptname='cse'
+*
+ERROR at line 1:
+ORA-02292: integrity constraint (RITHIKA.DCONST) violated - child record found
+
+7)
+
+SQL> alter table employee drop constraint dconst;
+
+Table altered.
+
+SQL> alter table employee add constraint dconst foreign key(dno) references department1(deptno) on delete cascade;
+
+Table altered.
+
+8)
+SQL> alter table employee modify salary default 10000;
+
+Table altered.
+
+SQL> insert into employee(empno,empname,gender,address,dno) values(4,'gilbert','M','bangalore',2);
+
+1 row created.
+
+SQL> select * from employee;
+
+     EMPNO EMPNAME              G     SALARY ADDRESS                     DNO
+---------- -------------------- - ---------- -------------------- ----------
+         1 emily                F      23799 manipal                       1
+         2 yennefer             F      92985 mangalore                     2
+         3 walter               M      83725 delhi                         3
+         4 gilbert              M      10000 bangalore                     2
+
+9)
+SQL> select name,dept_name from student;
+
+NAME                 DEPT_NAME
+-------------------- --------------------
+Zhang                Comp. Sci.
+Shankar              Comp. Sci.
+Brandt               History
+Chavez               Finance
+Peltier              Physics
+Levy                 Physics
+Williams             Comp. Sci.
+Sanchez              Music
+Snow                 Physics
+Brown                Comp. Sci.
+Aoi                  Elec. Eng.
+
+NAME                 DEPT_NAME
+-------------------- --------------------
+Bourikas             Elec. Eng.
+Tanaka               Biology
+
+13 rows selected.
+
+10)
+SQL> select * from instructor where dept_name='Comp. Sci.';
+
+ID    NAME                 DEPT_NAME                SALARY
+----- -------------------- -------------------- ----------
+10101 Srinivasan           Comp. Sci.                65000
+45565 Katz                 Comp. Sci.                75000
+83821 Brandt               Comp. Sci.                92000
+
+11)
+SQL> select title from course where credits=3;
+
+TITLE
+--------------------------------------------------
+Computational Biology
+Robotics
+Image Processing
+Database System Concepts
+Intro. to Digital Systems
+Investment Banking
+World History
+Music Video Production
+
+8 rows selected.
+
+12)
+SQL> select c.course_id,c.title from course c,takes t where id=12345 and c.course_id=t.course_id;
+
+COURSE_I TITLE
+-------- --------------------------------------------------
+CS-101   Intro. to Computer Science
+CS-190   Game Design
+CS-315   Robotics
+CS-347   Database System Concepts
+
+13)
+SQL> select * from instructor where salary between 40000 and 90000;
+
+ID    NAME                 DEPT_NAME                SALARY
+----- -------------------- -------------------- ----------
+10101 Srinivasan           Comp. Sci.                65000
+12121 Wu                   Finance                   90000
+15151 Mozart               Music                     40000
+32343 El Said              History                   60000
+33456 Gold                 Physics                   87000
+45565 Katz                 Comp. Sci.                75000
+58583 Califieri            History                   62000
+76543 Singh                Finance                   80000
+76766 Crick                Biology                   72000
+98345 Kim                  Elec. Eng.                80000
+
+10 rows selected.
+
+14)
+SQL> select id from instructor minus select id from teaches;
+
+ID
+-----
+33456
+58583
+76543
+
+15)
+SQL> select name,title,se.year from student s,course c, section se,takes t where se.room_number=303 and c.course_id=t.course_id and s.id=t.id and t.sec_id=se.sec_id and t.semester=se.semester and se.course_id=t.course_id;
+
+no rows selected
+
+16)
+SQL> select name, c.course_id, title c_name from student s,takes t, course c where s.id=t.id and c.course_id=t.course_id and t.year=2015;
+
+no rows selected
+
+17)
+SQL> select distinct i.name,i.salary inst_salary from instructor i, instructor j where i.salary>j.salary and j.dept_name='Comp. Sci.';
+
+NAME                 INST_SALARY
+-------------------- -----------
+Gold                       87000
+Katz                       75000
+Crick                      72000
+Einstein                   95000
+Wu                         90000
+Brandt                     92000
+Singh                      80000
+Kim                        80000
+
+8 rows selected.
+
+18)
+SQL> select name from instructor where dept_name like '%ch%';
+
+no rows selected
+
+19)
+SQL> select name,length(name) length from student;
+
+NAME                     LENGTH
+-------------------- ----------
+Zhang                         5
+Shankar                       7
+Brandt                        6
+Chavez                        6
+Peltier                       7
+Levy                          4
+Williams                      8
+Sanchez                       7
+Snow                          4
+Brown                         5
+Aoi                           3
+
+NAME                     LENGTH
+-------------------- ----------
+Bourikas                      8
+Tanaka                        6
+
+13 rows selected.
+
+20)
+
+SQL> select dept_name, substr(dept_name,3,3) substring from department;
+
+DEPT_NAME            SUBSTRING
+-------------------- ------------
+Biology              olo
+Comp. Sci.           mp.
+Elec. Eng.           ec.
+Finance              nan
+History              sto
+Music                sic
+Physics              ysi
+
+7 rows selected.
+
+21)
+SQL> select upper(name) from instructor;
+
+UPPER(NAME)
+--------------------
+SRINIVASAN
+WU
+MOZART
+EINSTEIN
+EL SAID
+GOLD
+KATZ
+CALIFIERI
+SINGH
+CRICK
+BRANDT
+
+UPPER(NAME)
+--------------------
+KIM
+
+12 rows selected.
+
+22)
+SQL> select nvl(grade,'F') from takes;
+
+NV
+--
+A
+A-
+C
+A
+A
+A
+B
+C+
+B-
+F
+B+
+
+NV
+--
+B
+A-
+B+
+A-
+A
+A
+C
+C-
+B
+A
+F
+
+22 rows selected.
+
+23)
+SQL> select salary, round(salary/3,-2) from instructor;
+
+    SALARY ROUND(SALARY/3,-2)
+---------- ------------------
+     65000              21700
+     90000              30000
+     40000              13300
+     95000              31700
+     60000              20000
+     87000              29000
+     75000              25000
+     62000              20700
+     80000              26700
+     72000              24000
+     92000              30700
+
+    SALARY ROUND(SALARY/3,-2)
+---------- ------------------
+     80000              26700
+
+12 rows selected.
+
+24)
+SQL> alter table employee add (dob date);
+
+Table altered.
+
+SQL> update employee set dob=to_date('12022003','ddmmyyyy') where empno=1;
+
+1 row updated.
+
+SQL> update employee set dob='10-jun-03' where empno=2;
+
+1 row updated.
+
+SQL> update employee set dob=to_date('120399','ddmmyy') where empno=3;
+
+1 row updated.
+SQL> update employee set dob=to_date('09sep2004','ddmonyyyy') where empno=4;
+
+1 row updated.
+
+SQL> select * from employee;
+
+     EMPNO EMPNAME              G     SALARY ADDRESS                     DNO
+---------- -------------------- - ---------- -------------------- ----------
+DOB
+---------
+         1 emily                F      23799 manipal                       1
+12-FEB-03
+
+         2 yennefer             F      92985 mangalore                     2
+10-JUN-03
+
+         3 walter               M      83725 delhi                         3
+12-MAR-99
+
+
+     EMPNO EMPNAME              G     SALARY ADDRESS                     DNO
+---------- -------------------- - ---------- -------------------- ----------
+DOB
+---------
+         4 gilbert              M      10000 bangalore                     2
+09-SEP-04
+
+
+i)
+SQL> select to_char(dob,'dd-mon-yyyy') DD_MON_YYYY from employee;
+
+DD_MON_YYYY
+--------------------
+12-feb-2003
+10-jun-2003
+12-mar-2099
+09-sep-2004
+
+ii)
+SQL> select to_char(dob,'dd-mon-yy') DD_MON_YY from employee;
+
+DD_MON_YY
+------------------
+12-feb-03
+10-jun-03
+12-mar-99
+09-sep-04
+
+iii)
+
+SQL> select to_char(dob,'dd-mm-yy') DD_MM_YY from employee;
+
+DD_MM_YY
+--------
+12-02-03
+10-06-03
+12-03-99
+09-09-04
+
+
+25)
+SQL> select empname,to_char(dob,'YEAR') YEAR from employee;
+
+EMPNAME              YEAR
+-------------------- ------------------------------------------
+emily                TWO THOUSAND THREE
+yennefer             TWO THOUSAND THREE
+walter               TWENTY NINETY-NINE
+gilbert              TWO THOUSAND FOUR
+
+SQL> select empname,to_char(dob,'Year') Year from employee;
+
+EMPNAME              YEAR
+-------------------- ------------------------------------------
+emily                Two Thousand Three
+yennefer             Two Thousand Three
+walter               Twenty Ninety-Nine
+gilbert              Two Thousand Four
+
+SQL> select empname,to_char(dob,'year') year from employee;
+
+EMPNAME              YEAR
+-------------------- ------------------------------------------
+emily                two thousand three
+yennefer             two thousand three
+walter               twenty ninety-nine
+gilbert              two thousand four
+
+26)
+SQL> select empname, to_char(dob,'DAY') DAY from employee;
+
+EMPNAME              DAY
+-------------------- ------------------------------------
+emily                WEDNESDAY
+yennefer             TUESDAY
+walter               THURSDAY
+gilbert              THURSDAY
+
+SQL> select empname, to_char(dob,'Day') Day from employee;
+
+EMPNAME              DAY
+-------------------- ------------------------------------
+emily                Wednesday
+yennefer             Tuesday
+walter               Thursday
+gilbert              Thursday
+
+27)
+SQL> select empname, to_char(dob,'MONTH') MONTH from employee;
+
+EMPNAME              MONTH
+-------------------- ------------------------------------
+emily                FEBRUARY
+yennefer             JUNE
+walter               MARCH
+gilbert              SEPTEMBER
+
+SQL> select empname, to_char(dob,'Month') Month from employee;
+
+EMPNAME              MONTH
+-------------------- ------------------------------------
+emily                February
+yennefer             June
+walter               March
+gilbert              September
+
+28)
+SQL> select last_day(dob) last_day,to_char(last_day(dob),'Day') day_of_week from employee where empname='emily';
+
+LAST_DAY  DAY_OF_WEEK
+--------- ------------------------------------
+28-FEB-03 Friday
+
+29)
+SQL> select round((sysdate-to_date(dob))/365,0) age from employee;
+
+       AGE
+----------
+        20
+        20
+        24
+        18
+
+30)
+
+SQL> select empname,next_day(add_months(dob,60*12),'saturday') nextsaturday from employee;
+
+EMPNAME              NEXTSATUR
+-------------------- ---------
+emily                17-FEB-63
+yennefer             16-JUN-63
+walter               17-MAR-59
+gilbert              13-SEP-64
+
+31)
+SQL> select empname, dob from employee where to_char(dob,'yyyy')='2003';
+
+EMPNAME              DOB
+-------------------- ---------
+emily                12-FEB-03
+yennefer             10-JUN-03
+
+SQL> select empname,dob from employee where extract(Year from dob)=2003;
+
+EMPNAME              DOB
+-------------------- ---------
+emily                12-FEB-03
+yennefer             10-JUN-03
+
+(can write YEAR or year instead of Year too)
+
+32)
+SQL> select empname,dob from employee where to_char(dob,'yyyy') between 2002 and 2003;
+
+EMPNAME              DOB
+-------------------- ---------
+emily                12-FEB-03
+yennefer             10-JUN-03
+
+SQL> select empname,dob from employee where extract(year from dob) between 2002 and 2003;
+
+EMPNAME              DOB
+-------------------- ---------
+emily                12-FEB-03
+yennefer             10-JUN-03
+
+33)
+SQL> select empname from employee where to_char(add_months(dob,60*12),'yyyy')=&X;
+Enter value for x: 2063
+old   1: select empname from employee where to_char(add_months(dob,60*12),'yyyy')=&X
+new   1: select empname from employee where to_char(add_months(dob,60*12),'yyyy')=2063
+
+EMPNAME
+--------------------
+emily
+yennefer
+
+SQL> select empname from employee where &X-to_char(dob,'yyyy')=60;
+Enter value for x: 2063
+old   1: select empname from employee where &X-to_char(dob,'yyyy')=60
+new   1: select empname from employee where 2063-to_char(dob,'yyyy')=60
+
+EMPNAME
+--------------------
+emily
+yennefer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
