@@ -1,0 +1,275 @@
+lab3
+
+1)
+SQL> select course_id from section where semester='Fall' and year=2009 union select course_id from section where semester='Spring' and year=2010;
+
+COURSE_I
+--------
+CS-101
+CS-315
+CS-319
+CS-347
+FIN-201
+HIS-351
+MU-199
+PHY-101
+
+8 rows selected.
+
+SQL> select course_id from takes where semester='Fall' and year=2009 union select course_id from takes where semester='Spring' and year=2010;
+
+COURSE_I
+--------
+CS-101
+CS-315
+CS-319
+CS-347
+FIN-201
+HIS-351
+MU-199
+PHY-101
+
+8 rows selected.
+
+2)
+SQL>  select course_id from section where semester='Fall' and year=2009 intersect select course_id from section where semester='Spring' and year=2010;
+
+COURSE_I
+--------
+CS-101
+
+3)
+SQL> select course_id from section where semester='Fall' and year=2009 minus select course_id from section where semester='Spring' and year=2010;
+
+COURSE_I
+--------
+CS-347
+PHY-101
+
+4)
+SQL> select course_id from course minus select course_id from takes;
+
+COURSE_I
+--------
+BIO-399
+
+SQL> select course_id from course where course_id not in (select course_id from takes);
+
+COURSE_I
+--------
+BIO-399
+
+SQL> select title from course where course_id not in (select course_id from takes);
+
+TITLE
+--------------------------------------------------
+Computational Biology
+
+5)
+SQL> select course_id from section where semester='Fall' and year=2009 and course_id in (select course_id from section where semester='Spring' and year=2010);
+
+COURSE_I
+--------
+CS-101
+
+6)
+SQL> select count(distinct id) from takes where (course_id,sec_id,semester,year) in (select course_id,sec_id,semester,year from teaches where id=10101);
+
+COUNT(DISTINCTID)
+-----------------
+                6
+
+7)
+SQL> select course_id from section where semester='Fall' and year=2009 and course_id not in (select course_id from section where semester='Spring' and year=2010);
+
+COURSE_I
+--------
+CS-347
+PHY-101
+
+8)
+SQL> select name from student where name in (select name from instructor);
+
+NAME
+--------------------
+Brandt
+
+9)
+SQL> select name from instructor where salary>some(select salary from instructor where dept_name='Biology');
+
+NAME
+--------------------
+Einstein
+Brandt
+Wu
+Gold
+Kim
+Singh
+Katz
+
+7 rows selected.
+
+10)
+SQL> select name from instructor where salary>all(select salary from instructor where dept_name='Biology');
+
+NAME
+--------------------
+Katz
+Singh
+Kim
+Gold
+Wu
+Brandt
+Einstein
+
+7 rows selected.
+
+11)
+SQL> select dept_name from instructor group by dept_name having avg(salary)>=all(select avg(salary) from instructor group by dept_name);
+
+DEPT_NAME
+--------------------
+Physics
+
+12)
+SQL> select dept_name from department where budget<all(select avg(salary) from instructor);
+
+DEPT_NAME
+--------------------
+History
+Physics
+
+13)
+SQL> select course_id from section s where semester='Fall' and year=2009 and exists(select course_id from section t where semester='Spring' and year=2010 and s.course_id=t.course_id);
+
+COURSE_I
+--------
+CS-101
+
+14)
+SQL> select distinct s.ID,s.name from student s where not exists((select course_id from course where dept_name='Biology') minus (select course_id from takes t where s.id=t.id));
+
+no rows selected
+
+15)
+SQL> select course_id from takes where year=2009 group by course_id having count(course_id)<=1;
+
+COURSE_I
+--------
+EE-181
+BIO-101
+PHY-101
+
+16)
+SQL> select distinct ID from takes t
+  2  where 2<=(select count(ID) from takes
+  3  where course_id in (select course_id from course c
+  4  where dept_name='Comp. Sci.' and t.course_id=c.course_id));
+
+ID
+-----
+00128
+12345
+45678
+54321
+76543
+98765
+
+6 rows selected.
+
+SQL> select t.id from takes t,course c where t.course_id=c.course_id and c.dept_name='Comp. Sci.' group by t.id having count(t.id)>=2;
+
+ID
+-----
+00128
+98765
+12345
+54321
+76543
+45678
+
+6 rows selected.
+
+SQL> select * from takes where course_id like 'CS%';
+
+ID    COURSE_I SEC_ID   SEMEST       YEAR GR
+----- -------- -------- ------ ---------- --
+00128 CS-101   1        Fall         2009 A
+00128 CS-347   1        Fall         2009 A-
+12345 CS-101   1        Fall         2009 C
+12345 CS-190   2        Spring       2009 A
+12345 CS-315   1        Spring       2010 A
+12345 CS-347   1        Fall         2009 A
+45678 CS-101   1        Fall         2009 F
+45678 CS-101   1        Spring       2010 B+
+45678 CS-319   1        Spring       2010 B
+54321 CS-101   1        Fall         2009 A-
+54321 CS-190   2        Spring       2009 B+
+
+ID    COURSE_I SEC_ID   SEMEST       YEAR GR
+----- -------- -------- ------ ---------- --
+76543 CS-101   1        Fall         2009 A
+76543 CS-319   2        Spring       2010 A
+98765 CS-101   1        Fall         2009 C-
+98765 CS-315   1        Spring       2010 B
+
+15 rows selected.
+
+17)
+SQL> select dept_name,avg(salary) from instructor group by dept_name having avg(salary)>42000;
+
+DEPT_NAME            AVG(SALARY)
+-------------------- -----------
+Elec. Eng.                 80000
+Physics                    91000
+Comp. Sci.            77333.3333
+Finance                    85000
+Biology                    72000
+History                    61000
+
+6 rows selected.
+
+18)
+SQL> create view all_courses as select s.sec_id,s.course_id,building,room_number from course c,section s where dept_name='Physics' and semester='Fall' and year=2009 and c.course_id=s.course_id;
+
+View created.
+
+SQL> select * from all_courses;
+
+SEC_ID   COURSE_I BUILDING        ROOM_NU
+-------- -------- --------------- -------
+1        PHY-101  Watson          100
+
+
+19)
+SQL> select course_id from all_courses;
+
+COURSE_I
+--------
+PHY-101
+
+20)
+SQL>  create view department_total_salary as select dept_name,sum(salary) total_salary from instructor group by dept_name;
+
+View created.  
+
+(alias needed for aggregate)
+or 
+create view department_total_salary(dept_name,total_salary) as select dept_name,sum(salary) from instructor group by dept_name;
+
+
+SQL> select * from department_total_salary;
+
+DEPT_NAME            TOTAL_SALARY
+-------------------- ------------
+Elec. Eng.                  80000
+Physics                    182000
+Comp. Sci.                 232000
+Finance                    170000
+Biology                     72000
+Music                       40000
+History                    122000
+
+7 rows selected.
+
+
