@@ -1,0 +1,239 @@
+lab 4
+1)
+SQL> select course_id,count(id) from takes group by course_id;
+
+COURSE_I  COUNT(ID)
+-------- ----------
+HIS-351           1
+EE-181            1
+CS-101            7
+CS-347            2
+FIN-201           1
+CS-319            2
+BIO-101           1
+PHY-101           1
+CS-315            2
+CS-190            2
+MU-199            1
+
+COURSE_I  COUNT(ID)
+-------- ----------
+BIO-301           1
+
+12 rows selected.
+
+
+2)
+SQL> select dept_name from student group by dept_name having count(id)>10;
+
+no rows selected
+
+3)
+SQL> select dept_name,count(course_id) from course group by dept_name;
+
+DEPT_NAME            COUNT(COURSE_ID)
+-------------------- ----------------
+Elec. Eng.                          1
+Physics                             1
+Comp. Sci.                          5
+Finance                             1
+Biology                             3
+History                             1
+Music                               1
+
+7 rows selected.
+
+4)
+SQL> select dept_name,avg(salary) from instructor group by dept_name having avg(salary)>42000;
+
+DEPT_NAME            AVG(SALARY)
+-------------------- -----------
+Elec. Eng.                 80000
+Physics                    91000
+Comp. Sci.            77333.3333
+Finance                    85000
+Biology                    72000
+History                    61000
+
+6 rows selected.
+
+5) (enrollment= number of students in each section)
+SQL> select sec_id,count(id) from takes where semester='Spring' and year=2009 group by sec_id;
+
+SEC_ID    COUNT(ID)
+-------- ----------
+1                 1
+2                 2
+
+6)
+SQL> select * from prereq order by course_id;
+
+COURSE_I PREREQ_I
+-------- --------
+BIO-301  BIO-101
+BIO-399  BIO-101
+CS-190   CS-101
+CS-315   CS-101
+CS-319   CS-101
+CS-347   CS-101
+EE-181   PHY-101
+
+7 rows selected.
+
+7)
+SQL> select * from instructor order by salary desc;
+
+ID    NAME                 DEPT_NAME                SALARY
+----- -------------------- -------------------- ----------
+22222 Einstein             Physics                   95000
+83821 Brandt               Comp. Sci.                92000
+12121 Wu                   Finance                   90000
+33456 Gold                 Physics                   87000
+98345 Kim                  Elec. Eng.                80000
+76543 Singh                Finance                   80000
+45565 Katz                 Comp. Sci.                75000
+76766 Crick                Biology                   72000
+10101 Srinivasan           Comp. Sci.                65000
+58583 Califieri            History                   62000
+32343 El Said              History                   60000
+
+ID    NAME                 DEPT_NAME                SALARY
+----- -------------------- -------------------- ----------
+15151 Mozart               Music                     40000
+
+12 rows selected.
+
+8)
+SQL> select max(total_salary) from (select sum(salary) total_salary from instructor group by dept_name);
+
+MAX(TOTAL_SALARY)
+-----------------
+           232000
+
+9)
+SQL> select dept_name,avg_salary from(select dept_name,avg(salary) avg_salary from instructor group by dept_name having avg(salary)>42000);
+
+DEPT_NAME            AVG_SALARY
+-------------------- ----------
+Elec. Eng.                80000
+Physics                   91000
+Comp. Sci.           77333.3333
+Finance                   85000
+Biology                   72000
+History                   61000
+
+6 rows selected.
+
+10)
+SQL>  select max(enrollment) from (select sec_id,count(id) enrollment from takes where semester='Spring' and year=2010 group by sec_id);
+
+MAX(ENROLLMENT)
+---------------
+              7
+
+11)
+
+12)
+SQL> select dept_name,avg(salary) from instructor group by dept_name having avg(salary)>50000 and count(id)>5;
+
+no rows selected
+
+13)
+
+SQL>  with temp(maxbudget) as (select max(budget) from department) select dept_name from department,temp where department.budget=temp.maxbudget;
+
+DEPT_NAME
+--------------------
+Finance
+
+
+14)
+SQL> with temp(dept_name,val) as (select dept_name,sum(salary) from instructor group by dept_name), temp2(val2) as (select avg(val) from temp) select dept_name from temp2,temp where temp.val>temp2.val2;
+
+DEPT_NAME
+--------------------
+Physics
+Comp. Sci.
+Finance
+
+15)
+SQL> with enrolments(course,sec,sem,year,val) as
+  2  (select course_id,sec_id,semester,year,count(id) from takes
+  3  where semester='Fall' and year=2009
+  4  group by course_id,sec_id,semester,year)
+  5  select e.course,e.sem,e.sec,e.year,e.val from enrolments e
+  6  where e.val = (select max(val) from enrolments);
+
+COURSE   SEM    SEC            YEAR        VAL
+-------- ------ -------- ---------- ----------
+CS-101   Fall   1              2009          6
+
+16)
+SQL> with sum_tot_cred(dept,val) as (select dept_name,sum(tot_cred)
+  2  from student group by dept_name),
+  3  tot_cred_fin(val) as (select sum(tot_cred)
+  4  from student where dept_name='Finance'  group by dept_name)
+  5  select dept,s.val from sum_tot_cred s,tot_cred_fin t
+  6  where s.val>t.val;
+
+DEPT                        VAL
+-------------------- ----------
+Biology                     120
+Comp. Sci.                  246
+Elec. Eng.                  158
+
+17)
+SQL> savepoint s2;
+
+Savepoint created.
+
+SQL> delete from instructor where dept_name='Finance';
+
+2 rows deleted.
+
+18)
+SQL> delete from course where dept_name='Comp. Sci.';
+
+5 rows deleted.
+
+19)
+SQL> update student set dept_name='IT' where dept_name='Comp. Sci.';
+update student set dept_name='IT' where dept_name='Comp. Sci.'
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (RITHIKA.SYS_C007105) violated - parent key not
+found
+
+SQL> insert into department values('IT','ab5',95000);
+
+1 row created.
+
+SQL> update student set dept_name='IT' where dept_name='Comp. Sci.';
+
+4 rows updated.
+
+20)
+SQL> update instructor set salary=case
+  2  when salary>100000 then salary*1.03
+  3  else salary*1.05
+  4  end;
+
+10 rows updated.
+
+21)
+SQL> insert into student(select id,name,dept_name,0 from instructor);
+
+10 rows created.
+
+22)
+SQL> delete from instructor where salary<(select avg(salary) from instructor);
+
+5 rows deleted.
+
+SQL> rollback to s2;
+
+Rollback complete.
+
+SQL> commit;
+
+Commit complete.
